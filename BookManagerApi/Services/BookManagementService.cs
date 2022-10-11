@@ -20,9 +20,13 @@ namespace BookManagerApi.Services
 
         public Book Create(Book book)
         {
-            _context.Add(book);
-            _context.SaveChanges();
-            return book;
+            if (!BookExists(book.Id))
+            {
+                _context.Add(book);
+                _context.SaveChanges();
+                return book;
+            }
+            else throw new Exception($"The book with id = {book.Id} already is in our list");
         }
 
         public Book Update(long id, Book book)
@@ -40,13 +44,24 @@ namespace BookManagerApi.Services
 
         public Book FindBookById(long id)
         {
-            var book = _context.Books.Find(id);
-            return book;
+            if (BookExists(id))
+            {
+                var book = _context.Books.Find(id);
+                return book;
+            }
+            else throw new Exception($"There is no book with id = {id} in our list");
         }
 
         public bool BookExists(long id)
         {
             return _context.Books.Any(b => b.Id == id);
+        }
+        public Book DeleteById (long id)
+        {
+            var bookToDelete = FindBookById(id);
+            _context.Remove(bookToDelete);
+            _context.SaveChanges();
+            return bookToDelete;
         }
     }
 }

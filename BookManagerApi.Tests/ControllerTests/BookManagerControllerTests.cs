@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BookManagerApi.Controllers;
 using BookManagerApi.Models;
@@ -96,4 +97,29 @@ public class BookManagerControllerTests
             new Book() { Id = 3, Title = "Book Three", Description = "This is the description for Book Three", Author = "Person Three", Genre = Genre.Thriller },
         };
     }
+
+    [Test]
+    public void DeleteBookById_Deletes_Correct_Book()
+    {
+        //Arrange
+        long existingBookId = 2;
+        var existingBookFound = GetTestBooks().FirstOrDefault(b => b.Id.Equals(existingBookId));
+
+        _mockBookManagementService.Setup(b => b.DeleteById(existingBookId)).Returns(existingBookFound);
+        //Act
+        var result = _controller.DeleteById(existingBookId);
+
+        //Assert
+        result.Should().BeOfType(typeof(ActionResult<Book>));
+        result.Value.Should().Be(existingBookFound);
+
+
+
+    }
+
+        
+
 }
+    
+   
+
